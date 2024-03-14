@@ -1,0 +1,55 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Feb 13 22:37:21 2024
+
+@author: Ramna
+"""
+
+import http.client
+import json
+
+conn = http.client.HTTPSConnection('dummy.com')
+dataList = []
+boundary = 'wL36Yn8afVp8Ag7AmP8qZ0SA4n1v9T'
+
+# Convert data dictionary to JSON string
+data = {
+    'ram': {
+        
+        'introduced': '', }
+        
+    # Add the rest of your data here...
+}
+
+# Convert data dictionary to JSON string
+json_data = json.dumps(data)
+
+# Append JSON data to dataList
+dataList.append('--' + boundary)
+dataList.append('Content-Disposition: form-data; name=jsondata;')
+dataList.append('Content-Type: application/json')
+dataList.append('')
+dataList.append(json_data)
+
+# Append additional form data
+dataList.append('--' + boundary)
+dataList.append('Content-Disposition: form-data; name=respid;')
+dataList.append('')
+dataList.append('1350')
+
+dataList.append('--' + boundary)
+dataList.append('Content-Disposition: form-data; name=jobno;')
+dataList.append('')
+dataList.append('66099')
+dataList.append('--'+boundary+'--')
+dataList.append('')
+body = '\r\n'.join(dataList)
+payload = body.encode('utf-8')
+
+headers = {
+   'Content-type': 'multipart/form-data; boundary={}'.format(boundary) 
+}
+conn.request("POST", "/wipeos/wipeos.asmx/Portjson", payload, headers)
+res = conn.getresponse()
+data = res.read()
+print(data.decode('utf-8'))
